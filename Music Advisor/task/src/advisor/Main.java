@@ -15,30 +15,14 @@ public class Main {
             + "client_id=81bcb1ba1c224b74b5f2bed6bb185cad"
             + "&redirect_uri=http://localhost:8080&response_type=code";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         final var scanner = new Scanner(System.in);
         for (; ; ) {
             final var command = scanner.nextLine();
             switch (command) {
                 case "auth":
-                    final var server = HttpServer.create();
-                    server.bind(new InetSocketAddress(8080), 0);
-
-                    server.createContext("/",
-                            exchange -> {
-                                var query = Objects.toString(exchange.getRequestURI().getQuery(), "test");
-                                var hello = "hello, world " + query;
-
-                                exchange.sendResponseHeaders(200, hello.length());
-                                exchange.getResponseBody().write(hello.getBytes());
-                                exchange.getResponseBody().close();
-                            }
-                    );
-                    server.start();
-                    System.out.println(URL);
+                    auth = controller.authorize();
                     System.out.println("---SUCCESS---");
-                    auth = true;
-                    server.stop(10);
                     break;
                 case "new":
                     print("---NEW RELEASES---\n" +

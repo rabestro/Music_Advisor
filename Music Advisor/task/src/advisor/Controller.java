@@ -18,6 +18,8 @@ import static java.lang.System.Logger.Level.INFO;
 
 public class Controller {
     private static final System.Logger LOGGER = System.getLogger("");
+    private static final String AUTH_SERVER = "https://accounts.spotify.com";
+    private static final String API_SERVER = "https://api.spotify.com";
     private static final String CONFIG_FILE = "application.properties";
     private static final String GRANT_TYPE = "authorization_code";
     private static final String RESPONSE_TYPE = "code";
