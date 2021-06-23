@@ -1,10 +1,8 @@
 package advisor;
 
-import com.sun.net.httpserver.HttpServer;
+import advisor.service.Auth;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class Main {
@@ -21,7 +19,8 @@ public class Main {
             final var command = scanner.nextLine();
             switch (command) {
                 case "auth":
-                    auth = controller.authorize();
+                    Auth authorization = new Auth();
+                    auth = authorization.getAccessCode();
                     System.out.println("---SUCCESS---");
                     break;
                 case "new":
@@ -62,4 +61,6 @@ public class Main {
     static void print(String message) {
         System.out.println(auth ? message : "Please, provide access for application.");
     }
+
+
 }
