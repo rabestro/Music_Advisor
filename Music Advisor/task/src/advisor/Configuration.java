@@ -7,14 +7,13 @@ import static java.lang.System.Logger.Level.ERROR;
 import static java.lang.System.Logger.Level.INFO;
 
 public class Configuration {
-    public static final String AUTH_SERVER = "https://accounts.spotify.com";
     public static final String API_SERVER = "https://api.spotify.com";
     public static final String CONFIG_FILE = "application.properties";
     public static final String GRANT_TYPE = "authorization_code";
     public static final String RESPONSE_TYPE = "code";
     private static final System.Logger LOGGER = System.getLogger("");
     private final String authServer;
-    private final String redirectUri;
+    private final String redirectHost;
     private final int redirectPort;
     private final String clientId;
     private final String clientSecret;
@@ -32,12 +31,12 @@ public class Configuration {
         if (args.length > 1 && args[0].equals("-access")) {
             authServer = args[1];
         } else {
-            authServer = properties.getProperty("uri.authentication", "https://accounts.spotify.com");
+            authServer = properties.getProperty("authentication.uri", "https://accounts.spotify.com");
         }
         LOGGER.log(INFO, "Authentication server: {0}", authServer);
         clientId = properties.getProperty("client.id");
         clientSecret = properties.getProperty("client.secret");
-        redirectUri = properties.getProperty("redirect.uri", "http://localhost");
+        redirectHost = properties.getProperty("redirect.host", "http://localhost");
         redirectPort = Integer.parseInt(properties.getProperty("redirect.port", "8080"));
 
     }
@@ -45,7 +44,7 @@ public class Configuration {
     public String getAuthLink() {
         return authServer + "/authorize"
                 + "?client_id=" + clientId
-                + "&redirect_uri=" + redirectUri + ":" + redirectPort
+                + "&redirect_uri=" + redirectHost + ":" + redirectPort
                 + "&response_type=code";
     }
 
