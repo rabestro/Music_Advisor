@@ -22,6 +22,9 @@ public class Application implements Runnable {
             final var command = scanner.nextLine();
             switch (command) {
                 case "auth":
+                    System.out.println("use this link to request the access code:");
+                    System.out.println(config.getAuthLink());
+
                     auth = new Authentication(config).getAuthentication();
                     System.out.println("---SUCCESS---");
                     break;

@@ -8,6 +8,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.System.Logger.Level.*;
 
@@ -25,48 +28,50 @@ public class Authentication {
     /**
      * Getting access_code
      */
-    public boolean getAccessCode() {
-        System.out.println("use this link to request the access code:");
-        System.out.println(config.getAuthLink());
+    public void getAccessCode() throws IOException, InterruptedException {
+        final var executorService = Executors.newSingleThreadExecutor();
+        final var countDownLatch = new CountDownLatch(1);
+        final var server = HttpServer.create(new InetSocketAddress(config.getPort()), 0);
 
-        //Creating a server and listening to the request.
-        try {
-            final var server = HttpServer.create(new InetSocketAddress(config.getPort()), 0);
-            server.createContext("/", exchange -> {
-                String query = exchange.getRequestURI().getQuery();
-                String request;
-                if (query != null && query.contains("code")) {
-                    code = query.substring(5);
-                    request = "Got the code. Return back to your program.";
-                    LOGGER.log(INFO, "Authorization Code: {0}", code);
-                } else {
-                    request = "Authorization code not found. Try again.";
-                    LOGGER.log(WARNING, "Not found authorization code.");
-                }
-                exchange.sendResponseHeaders(200, request.length());
-                exchange.getResponseBody().write(request.getBytes());
-                exchange.getResponseBody().close();
-            });
-
-            server.start();
-            System.out.println("waiting for code...");
-            while (code == null || code.length() == 0) {
-                Thread.sleep(1000);
+        server.createContext("/", exchange -> {
+            String query = exchange.getRequestURI().getQuery();
+            String request;
+            if (query != null && query.contains("code")) {
+                code = query.substring(5);
+                request = "Got the code. Return back to your program.";
+                countDownLatch.countDown();
+                LOGGER.log(INFO, "Authorization Code: {0}", code);
+            } else {
+                request = "Authorization code not found. Try again.";
+                LOGGER.log(WARNING, "Not found authorization code.");
             }
-            server.stop(5);
+            exchange.sendResponseHeaders(200, request.length());
+            exchange.getResponseBody().write(request.getBytes());
+            exchange.getResponseBody().close();
+        });
 
-        } catch (IOException | InterruptedException e) {
-            LOGGER.log(ERROR, e::getMessage);
-            return false;
-        }
-        return true;
+        server.setExecutor(executorService);      // set up a custom executor for the server
+        server.start();              // start the server
+        System.out.println("waiting for code...");
+        countDownLatch.await();                   // wait until `c.countDown()` is invoked
+        executorService.shutdown();               // send shutdown command to executor
+        // wait until all tasks complete (i. e. all responses are sent)
+        executorService.awaitTermination(1, TimeUnit.HOURS);
+        server.stop(5);
     }
 
     public boolean getAuthentication() {
-        return getAccessCode() && getAccessToken();
+        try {
+            getAccessCode();
+            getAccessToken();
+            return true;
+        } catch (InterruptedException | IOException e) {
+            LOGGER.log(ERROR, e::getMessage);
+            return false;
+        }
     }
 
-    public boolean getAccessToken() {
+    public void getAccessToken() throws IOException, InterruptedException {
         LOGGER.log(INFO, "Request access_token...");
 
         final var request = HttpRequest.newBuilder()
@@ -80,17 +85,10 @@ public class Authentication {
                                 + "&redirect_uri=" + config.getRedirectUri()))
                 .build();
 
-        try {
-
-            final var client = HttpClient.newBuilder().build();
-            final var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            LOGGER.log(DEBUG, response::body);
-            System.out.println(response.body());
-        } catch (InterruptedException | IOException e) {
-            LOGGER.log(ERROR, e::getMessage);
-            return false;
-        }
-        return true;
+        final var client = HttpClient.newBuilder().build();
+        final var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        LOGGER.log(DEBUG, response::body);
+        System.out.println(response.body());
     }
 
 }
