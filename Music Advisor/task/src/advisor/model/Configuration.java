@@ -1,4 +1,4 @@
-package advisor;
+package advisor.model;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -17,8 +17,30 @@ public class Configuration {
     private final String clientId;
     private final String clientSecret;
     private int page;
+    private String accessToken;
+
+    public String getAccessToken() {
+        return accessToken;
+    }
 
     public Configuration(String[] args) {
+        final var properties = getProperties(CONFIG_FILE);
+
+        clientId = properties.getProperty("client.id");
+        clientSecret = properties.getProperty("client.secret");
+        redirectHost = properties.getProperty("redirect.host", "http://localhost");
+        redirectPort = Integer.parseInt(properties.getProperty("redirect.port", "8080"));
+
+        authServer = properties.getProperty("authentication.uri", "https://accounts.spotify.com");
+        apiServer = properties.getProperty("api.uri", "https://api.spotify.com");
+        page = Integer.parseInt(properties.getProperty("page", "5"));
+
+        parseArguments(args);
+
+        LOGGER.log(INFO, "Authentication server: {0}", authServer);
+    }
+
+    private Properties getProperties(String fileName) {
         final var properties = new Properties();
 
         try (final var ins = Configuration.class.getClassLoader().getResourceAsStream(CONFIG_FILE)) {
@@ -27,14 +49,10 @@ public class Configuration {
         } catch (IOException e) {
             LOGGER.log(ERROR, "Could not load internal logger configuration: {0}", e.toString());
         }
+        return properties;
+    }
 
-        redirectHost = properties.getProperty("redirect.host", "http://localhost");
-        redirectPort = Integer.parseInt(properties.getProperty("redirect.port", "8080"));
-
-        authServer = properties.getProperty("authentication.uri", "https://accounts.spotify.com");
-        apiServer = properties.getProperty("api.uri", "https://api.spotify.com");
-        page = Integer.parseInt(properties.getProperty("page", "5"));
-
+    private void parseArguments(String[] args) {
         for (int i = 0; i < args.length; ++i) {
             switch (args[i]) {
                 case "-access":
@@ -50,11 +68,6 @@ public class Configuration {
                     LOGGER.log(WARNING, "Unknown property {0}", args[i]);
             }
         }
-
-        clientId = properties.getProperty("client.id");
-        clientSecret = properties.getProperty("client.secret");
-
-        LOGGER.log(INFO, "Authentication server: {0}", authServer);
     }
 
     public String getClientSecret() {
@@ -90,5 +103,9 @@ public class Configuration {
 
     public int getPort() {
         return redirectPort;
+    }
+
+    public void setAccessToken(final String accessToken) {
+        this.accessToken = accessToken;
     }
 }

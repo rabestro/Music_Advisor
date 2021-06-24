@@ -1,5 +1,6 @@
-package advisor;
+package advisor.controller;
 
+import advisor.model.Configuration;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;

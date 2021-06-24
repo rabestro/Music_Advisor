@@ -1,4 +1,9 @@
-package advisor;
+package advisor.view;
+
+import advisor.controller.Authentication;
+import advisor.controller.Controller;
+import advisor.controller.NotAuthenticated;
+import advisor.model.Configuration;
 
 import java.util.Scanner;
 
@@ -9,10 +14,13 @@ public class Application implements Runnable {
     private static final Scanner scanner = new Scanner(System.in);
 
     private final Configuration config;
+    private final Controller controller;
+
     private boolean auth = false;
 
     public Application(Configuration configuration) {
         this.config = configuration;
+        controller = new NotAuthenticated(configuration);
         LOGGER.log(INFO, "Application started.");
     }
 
