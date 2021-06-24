@@ -41,6 +41,30 @@ public class Configuration {
 
     }
 
+    public String getClientSecret() {
+        return clientSecret;
+    }
+
+    public String getRedirectUri() {
+        return redirectHost + ":" + redirectPort + "";
+    }
+
+    public String getRedirectHost() {
+        return redirectHost;
+    }
+
+    public int getRedirectPort() {
+        return redirectPort;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public String getAuthServer() {
+        return authServer;
+    }
+
     public String getAuthLink() {
         return authServer + "/authorize"
                 + "?client_id=" + clientId

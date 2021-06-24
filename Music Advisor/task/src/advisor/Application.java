@@ -22,7 +22,7 @@ public class Application implements Runnable {
             final var command = scanner.nextLine();
             switch (command) {
                 case "auth":
-                    auth = new Authentication(config).getAccessCode();
+                    auth = new Authentication(config).getAuthentication();
                     System.out.println("---SUCCESS---");
                     break;
                 case "new":
