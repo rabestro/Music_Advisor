@@ -14,7 +14,7 @@ public class Application implements Runnable {
     private static final Scanner scanner = new Scanner(System.in);
 
     private final Configuration config;
-    private final Controller controller;
+    private Controller controller;
 
     private boolean auth = false;
 
@@ -32,16 +32,16 @@ public class Application implements Runnable {
                 case "auth":
                     System.out.println("use this link to request the access code:");
                     System.out.println(config.getAuthLink());
-
-                    auth = new Authentication(config).getAuthentication();
+                    controller = controller.authenticate();
                     System.out.println("---SUCCESS---");
                     break;
                 case "new":
-                    print("---NEW RELEASES---\n" +
-                            "Mountains [Sia, Diplo, Labrinth]\n" +
-                            "Runaway [Lil Peep]\n" +
-                            "The Greatest Show [Panic! At The Disco]\n" +
-                            "All Out Life [Slipknot]");
+                    controller.process("new");
+//                    print("---NEW RELEASES---\n" +
+//                            "Mountains [Sia, Diplo, Labrinth]\n" +
+//                            "Runaway [Lil Peep]\n" +
+//                            "The Greatest Show [Panic! At The Disco]\n" +
+//                            "All Out Life [Slipknot]");
                     break;
                 case "featured":
                     print("---FEATURED---\n" +

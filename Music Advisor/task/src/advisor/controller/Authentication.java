@@ -1,6 +1,8 @@
 package advisor.controller;
 
 import advisor.model.Configuration;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -72,7 +74,7 @@ public class Authentication {
         }
     }
 
-    public void getAccessToken() throws IOException, InterruptedException {
+    public String getAccessToken() throws IOException, InterruptedException {
         LOGGER.log(INFO, "Request access_token...");
 
         final var request = HttpRequest.newBuilder()
@@ -88,8 +90,11 @@ public class Authentication {
 
         final var client = HttpClient.newBuilder().build();
         final var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        JsonObject jo = JsonParser.parseString(response.body()).getAsJsonObject();
+        String accessToken = jo.get("access_token").getAsString();
         LOGGER.log(DEBUG, response::body);
         System.out.println(response.body());
+        return accessToken;
     }
 
 }
