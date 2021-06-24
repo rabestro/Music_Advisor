@@ -6,22 +6,18 @@ import java.util.Properties;
 import static java.lang.System.Logger.Level.*;
 
 public class Configuration {
-    private static final System.Logger LOGGER = System.getLogger("");
     public static final String CONFIG_FILE = "application.properties";
     public static final String GRANT_TYPE = "authorization_code";
     public static final String RESPONSE_TYPE = "code";
-    private String authServer;
-    private String apiServer;
+    private static final System.Logger LOGGER = System.getLogger("");
     private final String redirectHost;
     private final int redirectPort;
     private final String clientId;
     private final String clientSecret;
+    private String authServer;
+    private String apiServer;
     private int page;
     private String accessToken;
-
-    public String getAccessToken() {
-        return accessToken;
-    }
 
     public Configuration(String[] args) {
         final var properties = getProperties(CONFIG_FILE);
@@ -38,6 +34,14 @@ public class Configuration {
         parseArguments(args);
 
         LOGGER.log(INFO, "Authentication server: {0}", authServer);
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(final String accessToken) {
+        this.accessToken = accessToken;
     }
 
     private Properties getProperties(String fileName) {
@@ -103,9 +107,5 @@ public class Configuration {
 
     public int getPort() {
         return redirectPort;
-    }
-
-    public void setAccessToken(final String accessToken) {
-        this.accessToken = accessToken;
     }
 }

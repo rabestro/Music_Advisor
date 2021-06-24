@@ -1,6 +1,5 @@
 package advisor.view;
 
-import advisor.controller.Authentication;
 import advisor.controller.Controller;
 import advisor.controller.NotAuthenticated;
 import advisor.model.Configuration;
@@ -16,7 +15,7 @@ public class Application implements Runnable {
     private final Configuration config;
     private Controller controller;
 
-    private boolean auth = false;
+    private final boolean auth = false;
 
     public Application(Configuration configuration) {
         this.config = configuration;

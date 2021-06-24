@@ -1,7 +1,6 @@
 package advisor.controller;
 
 import advisor.model.Configuration;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpServer;
 
